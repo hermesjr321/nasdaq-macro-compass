@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nasdaq Macro Compass v2</title>
+<style>
+:root{--bg:#0b1020;--panel:#141c30;--panel2:#1b2740;--text:#edf3ff;--muted:#9aabc8;--line:#2a3958;--green:#35d39a;--red:#ff667a;--yellow:#f4c96b;--blue:#72a7ff}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(145deg,#0b1020,#101a2d);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+main{max-width:1180px;margin:auto;padding:20px 14px 50px}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+h1{font-size:25px;margin:0}.sub{color:var(--muted);margin:4px 0 16px;font-size:13px}
+.pill{border:1px solid var(--line);padding:6px 11px;border-radius:30px;color:var(--muted);font-size:12px;display:inline-flex;gap:7px;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--yellow)}.dot.ok{background:var(--green)}.dot.bad{background:var(--red)}
+.card{background:rgba(20,28,48,.96);border:1px solid var(--line);border-radius:15px;padding:16px;min-width:0}
+.card h2{font-size:15px;margin:0 0 4px}.desc{font-size:12px;color:var(--muted);margin:0 0 12px;line-height:1.45}
+.hero{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:10px 0 12px}
+.score{background:linear-gradient(135deg,#1b2b49,#141c30);border:1px solid var(--line);border-radius:16px;padding:16px}
+.kicker{font-size:11px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+.big{font-size:40px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-top:2px}
+.bias{font-size:16px;font-weight:750}
+.meter{height:10px;background:#26334c;border-radius:20px;overflow:hidden;margin:11px 0 6px;position:relative}
+.meter i{position:absolute;top:0;bottom:0;border-radius:20px}.meter b{position:absolute;left:50%;top:0;bottom:0;width:1px;background:#52668c}
+.small{font-size:12px;color:var(--muted);line-height:1.5}
+.green{color:var(--green)}.red{color:var(--red)}.yellow{color:var(--yellow)}
+.thesis{margin:0 0 12px}.thesis p{margin:6px 0;line-height:1.5}
+.cols{display:grid;grid-template-columns:1.15fr .85fr;gap:12px;margin-bottom:12px}
+.flag{padding:9px 11px;border-left:3px solid var(--yellow);background:#0e1729;border-radius:8px;margin:7px 0;font-size:13px;line-height:1.45}
+.mkt{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px}
+.q{background:#0e1729;border:1px solid var(--line);border-radius:11px;padding:9px 10px}
+.q .n{font-size:11px;color:var(--muted)}.q .p{font-size:17px;font-weight:700}.q .c{font-size:12px;font-weight:650}
+.q svg{width:100%;height:20px;margin-top:3px;display:block}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:11px;color:var(--muted);text-align:left;font-weight:600;padding:5px 6px;border-bottom:1px solid var(--line)}
+td{padding:8px 6px;border-bottom:1px solid #1f2c47;vertical-align:middle}
+.bar{height:8px;background:#26334c;border-radius:10px;position:relative;min-width:80px}
+.bar b{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:#52668c}.bar i{position:absolute;top:0;bottom:0;border-radius:10px}
+details summary{cursor:pointer;list-style:none}details summary::-webkit-details-marker{display:none}
+.notes{font-size:12px;color:var(--muted);padding:6px 4px 2px;line-height:1.55}.notes li{margin:2px 0}
+.ev{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1f2c47;align-items:flex-start}
+.ev .when{min-width:96px;font-size:12px;color:var(--muted)}.ev .when b{display:block;color:var(--text);font-size:13px}
+.ev .t{flex:1;font-size:13px;line-height:1.4}.ev .m{font-size:11px;color:var(--muted)}
+.tag{display:inline-block;border-radius:6px;padding:2px 7px;background:#263650;color:#cbd9f2;font-size:11px;margin:0 5px 3px 0}
+.tag.hot{background:#4a2a35;color:#ffc0ca}.tag.cur{background:#243a5e}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.chip{border:1px solid #3a4d6d;background:#1b2740;color:var(--text);border-radius:20px;padding:5px 10px;font-size:12px;cursor:pointer}
+.chip.on{background:var(--blue);color:#071225;border-color:var(--blue);font-weight:700}
+.news{padding:9px 0;border-bottom:1px solid #1f2c47}.news a{color:var(--text);text-decoration:none;font-size:13px;line-height:1.4}.news a:hover{text-decoration:underline}
+.day{font-size:11px;color:var(--blue);margin:12px 0 2px;text-transform:uppercase;letter-spacing:.05em}
+.foot{margin-top:14px;color:var(--muted);font-size:12px;line-height:1.6}
+@media(max-width:860px){.hero,.cols{grid-template-columns:1fr}.big{font-size:34px}}
+</style>
+</head>
+<body>
+<main>
+ <div class="top">
+  <div><h1>🧭 Nasdaq Macro Compass <span style="font-size:13px;color:var(--muted);font-weight:500">v2 · automático</span></h1>
+  <div class="sub">Contexto geral do dia e da semana para NQ / MNQ · sem entrada manual · horário de Brasília</div></div>
+  <span class="pill"><span class="dot" id="dot"></span><span id="status">carregando…</span></span>
+ </div>
+
+ <div class="hero" id="hero"></div>
+ <section class="card thesis"><h2>Tese automática</h2><div id="thesis" class="small">Buscando cotações, calendário e notícias…</div><div id="flags"></div></section>
+
+ <div class="cols">
+  <section class="card"><h2>Alertas que podem mudar a trajetória</h2><p class="desc">Red folders dos próximos dias e manchetes globais classificadas por relevância (Fed, dados, tarifas, geopolítica, energia, big tech, política). A classificação mede relevância, não direção.</p><div id="alerts"></div></section>
+  <section class="card"><h2>Agenda de red folders (BRT)</h2><p class="desc">Alto impacto de EUA, zona do euro, Reino Unido, Japão e China. Feriados dos EUA também aparecem.</p><div id="cal"></div></section>
+ </div>
+
+ <section class="card" style="margin-bottom:12px"><h2>Mercado agora</h2><p class="desc">Variação do dia = sessão completa (inclui Ásia e Europa nos futuros), não só a abertura de Nova York.</p><div class="mkt" id="mkt"></div></section>
+
+ <section class="card" style="margin-bottom:12px"><h2>Blocos do score</h2><p class="desc">Cada bloco vai de -100 a +100. Clique na linha para ver os números usados.</p><div id="blocks"></div></section>
+
+ <section class="card"><h2>Notícias globais</h2><div class="chips" id="chips"></div><div id="news"></div></section>
+
+ <p class="foot">Ferramenta educacional de apoio ao contexto, não recomendação financeira nem gatilho de entrada. O score é uma heurística transparente, não um modelo estatístico validado. Cotações vêm do Yahoo Finance (endpoint não oficial, pode atrasar ou falhar), o calendário de um feed público de terceiros e as notícias do Google News, classificadas por palavras-chave que não entendem contexto. Confirme eventos e horários na fonte oficial (BLS, Fed) antes de operar e use sempre seu limite de risco e seu gatilho de preço.</p>
+</main>
+<script>
+const TZ='America/Sao_Paulo';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let D=null,catFilter='todas',lastOk=0;
+
+const fmtDay=t=>new Intl.DateTimeFormat('pt-BR',{timeZone:TZ,weekday:'long',day:'2-digit',month:'2-digit'}).format(t);
+const fmtHour=t=>new Intl.DateTimeFormat('pt-BR',{timeZone:TZ,hour:'2-digit',minute:'2-digit',hour12:false}).format(t);
+const dayKey=t=>new Intl.DateTimeFormat('en-CA',{timeZone:TZ}).format(t);
+function rel(ms){const m=Math.round(Math.abs(ms)/60000);const t=m>=1440?Math.floor(m/1440)+'d '+Math.floor((m%1440)/60)+'h':m>=60?Math.floor(m/60)+'h'+(m%60?' '+(m%60)+'min':''):m+'min';return ms>=0?'em '+t:'há '+t}
+const col=s=>s>=25?'green':s<=-25?'red':'yellow';
+const hex=s=>s>=25?'#35d39a':s<=-25?'#ff667a':'#f4c96b';
+const sgn=n=>(n>0?'+':'')+n;
+const pct=x=>x==null?'n/d':(x>0?'+':'')+x.toFixed(2)+'%';
+
+function bar(v,height){ // v em -1..1
+  if(v==null)return '<div class="bar"></div>';
+  const w=Math.min(50,Math.abs(v)*50);const c=v>=0.25?'#35d39a':v<=-0.25?'#ff667a':'#f4c96b';
+  return `<div class="bar"><b></b><i style="background:${c};${v>=0?'left:50%':'right:50%'};width:${w}%"></i></div>`;
+}
+function scoreBox(title,o){
+  const w=o.insufficient?0:Math.abs(o.score)/2;
+  const c=o.insufficient?'yellow':col(o.score);
+  return `<section class="score"><div class="kicker">${title}</div>
+   <div class="big ${c}">${o.insufficient?'—':sgn(o.score)}</div><div class="bias ${c}">${o.label}</div>
+   <div class="meter"><b></b><i style="background:${o.insufficient?'#f4c96b':hex(o.score)};${o.score>=0?'left:50%':'right:50%'};width:${w}%"></i></div>
+   <div class="small">Confiança <b>${o.confLabel}</b> (${o.confidence}%) · alinhamento dos blocos ${o.alignment}% · cobertura de dados ${o.coverage}%</div></section>`;
+}
+function riskBox(r,regime){
+  const c={baixo:'green',moderado:'yellow',alto:'red',extremo:'red'}[r.level];
+  const nx=r.next?`<div class="small" style="margin-top:6px"><b>${esc(r.next.title)}</b> (${r.next.currency})<br>${fmtDay(r.next.time)} às ${fmtHour(r.next.time)} · ${rel(r.next.time-Date.now())}</div>`:'<div class="small" style="margin-top:6px">Sem red folder dos EUA nos próximos dias.</div>';
+  return `<section class="score"><div class="kicker">Risco de evento</div><div class="big ${c}" style="font-size:32px;text-transform:uppercase">${r.level}</div>
+   <div class="bias" style="color:var(--text)">Regime: ${regime}</div>${nx}</section>`;
+}
+
+function render(){
+  if(!D)return;
+  $('hero').innerHTML=scoreBox('Contexto do dia',D.day)+scoreBox('Contexto da semana',D.week)+riskBox(D.risk,D.regime);
+  $('thesis').innerHTML='<div class="thesis">'+D.narrative.map(t=>`<p>${esc(t)}</p>`).join('')+'</div><p class="small">Viés macro é contexto, não gatilho. Divergência forte entre dia e semana, ou evento próximo, pedem menos convicção e confirmação no seu preço e fluxo.</p>';
+  $('flags').innerHTML=D.flags.length?'<div class="kicker" style="margin-top:10px">Divergências e alertas de mercado</div>'+D.flags.map(f=>`<div class="flag">${esc(f)}</div>`).join(''):'';
+  renderAlerts();renderCal();renderMkt();renderBlocks();renderNews();
+  const h=D.health,bad=h.symbolsOk<h.symbolsTotal*0.6;
+  $('dot').className='dot '+(bad?'bad':h.symbolsOk===h.symbolsTotal&&h.calendarOk?'ok':'');
+  $('status').textContent=`${h.symbolsOk}/${h.symbolsTotal} cotações · calendário: ${h.calendarSource}${h.calendarOk?'':' (atenção)'} · notícias ${h.newsOk}/${h.newsTotal} · atualizado ${fmtHour(D.generatedAt)}`;
+}
+
+function renderAlerts(){
+  const now=Date.now();
+  const ev=D.calendar.filter(e=>e.impact==='High'&&e.time>=now-3600e3&&e.time<=now+72*3600e3).slice(0,5).map(e=>`<div class="ev"><div class="when"><b>${fmtHour(e.time)}</b>${rel(e.time-now)}</div><div class="t"><span class="tag hot">RED FOLDER</span><span class="tag cur">${e.currency}</span>${esc(e.title)}<div class="m">${e.forecast?'Previsão '+esc(e.forecast)+' · ':''}${e.previous?'Anterior '+esc(e.previous):''}</div></div></div>`);
+  const nw=D.news.filter(n=>n.flagged).slice(0,6).map(n=>`<div class="ev"><div class="when"><b>${n.horizon==='semana'?'Semana':'Dia'}</b>${rel(-n.ageH*3600e3)}</div><div class="t"><a href="${esc(n.link)}" target="_blank" rel="noopener noreferrer" style="color:var(--text);text-decoration:none">${esc(n.title)}</a><div class="m">${n.cats.map(c=>`<span class="tag">${c.label}</span>`).join('')}${esc(n.source||'')}</div></div></div>`);
+  $('alerts').innerHTML=(ev.join('')+nw.join(''))||'<div class="small">Nada relevante sinalizado agora.</div>';
+}
+function renderCal(){
+  const now=Date.now();let html='',last='';
+  for(const e of D.calendar){
+    const k=dayKey(e.time);
+    if(k!==last){html+=`<div class="day">${fmtDay(e.time)}</div>`;last=k}
+    const hol=e.impact==='Holiday';
+    html+=`<div class="ev"><div class="when"><b>${hol?'dia todo':fmtHour(e.time)}</b>${hol?'':rel(e.time-now)}</div><div class="t"><span class="tag ${hol?'':'hot'}">${hol?'FERIADO':'RED'}</span><span class="tag cur">${e.currency}</span>${esc(e.title)}<div class="m">${e.forecast?'Previsão '+esc(e.forecast)+' · ':''}${e.previous?'Anterior '+esc(e.previous):''}</div></div></div>`;
+  }
+  $('cal').innerHTML=html||'<div class="small">Nenhum evento encontrado.</div>'+(D.health.calendarOk?'':'<div class="small">Fonte do calendário indisponível. Confira em um calendário oficial.</div>');
+}
+const LAB={'NQ=F':'Nasdaq 100 (NQ)','ES=F':'S&P 500 (ES)','YM=F':'Dow (YM)','RTY=F':'Russell (RTY)','^VIX':'VIX','DX-Y.NYB':'Dólar (DXY)','^TNX':'Treasury 10Y','USDJPY=X':'USD/JPY','GC=F':'Ouro','CL=F':'Petróleo WTI','HG=F':'Cobre','BTC-USD':'Bitcoin','^N225':'Nikkei','^GDAXI':'DAX','^HSI':'Hang Seng','HYG':'High yield (HYG)'};
+function spark(a,up){if(!a||a.length<3)return '';const mn=Math.min(...a),mx=Math.max(...a),r=(mx-mn)||1;const p=a.map((v,i)=>`${(i/(a.length-1)*100).toFixed(1)},${(18-(v-mn)/r*16).toFixed(1)}`).join(' ');return `<svg viewBox="0 0 100 20" preserveAspectRatio="none"><polyline fill="none" stroke="${up?'#35d39a':'#ff667a'}" stroke-width="1.5" points="${p}"/></svg>`}
+function renderMkt(){
+  $('mkt').innerHTML=Object.keys(LAB).map(s=>{
+    const q=D.quotes[s];if(!q||!q.ok)return `<div class="q"><div class="n">${LAB[s]}</div><div class="p small">sem dados</div></div>`;
+    let price,chg;
+    if(s==='^TNX'){const y=q.price>20?q.price/10:q.price;const b=q.abs1d==null?null:q.abs1d*(q.price>20?10:100);price=y.toFixed(2)+'%';chg=b==null?'n/d':(b>0?'+':'')+b.toFixed(1)+' bp';var up=(b||0)>=0}
+    else{price=q.price>=1000?q.price.toLocaleString('en-US',{maximumFractionDigits:0}):q.price.toFixed(2);chg=pct(q.chg1d);up=(q.chg1d||0)>=0}
+    return `<div class="q"><div class="n">${LAB[s]}${q.stale?' · atrasado':''}</div><div class="p">${price}</div><div class="c ${up?'green':'red'}">${chg}</div>${spark(q.spark,up)}</div>`;
+  }).join('');
+}
+function renderBlocks(){
+  let html='<table><thead><tr><th>Bloco</th><th>Peso</th><th style="width:26%">Dia</th><th style="width:26%">Semana</th></tr></thead></table>';
+  html+=D.blocks.map(b=>`<details><summary><table><tr><td>${esc(b.name)}</td><td style="width:50px">${b.weight}%</td><td style="width:26%">${bar(b.day)}<span class="small">${b.day==null?'sem dados':sgn(Math.round(b.day*100))}</span></td><td style="width:26%">${bar(b.week)}<span class="small">${b.week==null?'sem dados':sgn(Math.round(b.week*100))}</span></td></tr></table></summary><ul class="notes">${b.notes.length?b.notes.map(n=>`<li>${esc(n)}</li>`).join(''):'<li>Sem dados disponíveis para este bloco.</li>'}</ul></details>`).join('');
+  $('blocks').innerHTML=html;
+}
+function renderNews(){
+  const cats=['todas','relevantes'];D.news.forEach(n=>n.cats.forEach(c=>{if(!cats.includes(c.label))cats.push(c.label)}));
+  $('chips').innerHTML=cats.map(c=>`<button class="chip ${c===catFilter?'on':''}" data-c="${esc(c)}">${esc(c)}</button>`).join('');
+  document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{catFilter=b.dataset.c;renderNews()});
+  const list=D.news.filter(n=>catFilter==='todas'||(catFilter==='relevantes'?n.flagged:n.cats.some(c=>c.label===catFilter)));
+  $('news').innerHTML=list.map(n=>`<div class="news"><a href="${esc(n.link)}" target="_blank" rel="noopener noreferrer">${esc(n.title)}</a><div class="small">${n.flagged?'<span class="tag hot">relevante</span>':''}${n.cats.map(c=>`<span class="tag">${c.label}</span>`).join('')}${esc(n.source||'')} · ${rel(-n.ageH*3600e3)}</div></div>`).join('')||'<div class="small">Nenhuma manchete nesta categoria (ou as consultas de notícias falharam).</div>';
+}
+
+async function load(){
+  try{
+    const r=await fetch('/api/dashboard',{cache:'no-store'});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    D=await r.json();lastOk=Date.now();render();
+  }catch(e){
+    $('dot').className='dot bad';$('status').textContent='sem conexão com o servidor local (rode: node server.js)';
+  }
+}
+load();setInterval(load,60000);setInterval(()=>{if(D)renderAlerts(),renderCal()},30000);
+</script>
+</body>
+</html>
