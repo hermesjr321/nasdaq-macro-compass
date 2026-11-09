@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Compass">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<title>Nasdaq Macro Compass</title>
+<style>
+:root{--bg:#0b1020;--panel:#141c30;--panel2:#1b2740;--text:#edf3ff;--muted:#9aabc8;--line:#2a3958;--green:#35d39a;--red:#ff667a;--yellow:#f4c96b;--blue:#72a7ff}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:linear-gradient(145deg,#0b1020,#101a2d);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+main{max-width:1180px;margin:auto;padding:max(20px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(50px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+h1{font-size:25px;margin:0}.sub{color:var(--muted);margin:4px 0 16px;font-size:13px}
+.right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{border:1px solid var(--line);padding:6px 11px;border-radius:30px;color:var(--muted);font-size:12px;display:inline-flex;gap:7px;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--yellow);flex:none}.dot.ok{background:var(--green)}.dot.bad{background:var(--red)}
+button{border:0;border-radius:10px;padding:8px 13px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;background:var(--blue);color:#071225}
+button.ghost{background:#263650;color:var(--text);border:1px solid #3a4d6d}
+.card{background:rgba(20,28,48,.96);border:1px solid var(--line);border-radius:15px;padding:16px;min-width:0}
+.card h2{font-size:15px;margin:0 0 4px}.desc{font-size:12px;color:var(--muted);margin:0 0 12px;line-height:1.45}
+.hero{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:10px 0 12px}
+.score{background:linear-gradient(135deg,#1b2b49,#141c30);border:1px solid var(--line);border-radius:16px;padding:16px}
+.kicker{font-size:11px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+.big{font-size:40px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-top:2px}
+.bias{font-size:16px;font-weight:750}
+.meter{height:10px;background:#26334c;border-radius:20px;overflow:hidden;margin:11px 0 6px;position:relative}
+.meter i{position:absolute;top:0;bottom:0;border-radius:20px}.meter b{position:absolute;left:50%;top:0;bottom:0;width:1px;background:#52668c}
+.small{font-size:12px;color:var(--muted);line-height:1.5}
+.green{color:var(--green)}.red{color:var(--red)}.yellow{color:var(--yellow)}.mut{color:var(--muted)}
+.thesis p{margin:6px 0;line-height:1.5}
+.cols{display:grid;grid-template-columns:1.15fr .85fr;gap:12px;margin-bottom:12px}
+.cols.eq{grid-template-columns:1fr 1fr}
+.flag{padding:9px 11px;border-left:3px solid var(--yellow);background:#0e1729;border-radius:8px;margin:7px 0;font-size:13px;line-height:1.45}
+.stale{border:1px solid #3a4d6d;background:#16213a;border-radius:10px;padding:8px 12px;margin:0 0 12px;font-size:12px;color:var(--muted)}
+.redbar{border:1px solid var(--red);background:rgba(255,102,122,.12);border-radius:12px;padding:10px 14px;margin:0 0 12px;font-size:13px;line-height:1.5}
+.redbar b{color:var(--red);display:block;letter-spacing:.03em;text-transform:uppercase;font-size:11px;margin-bottom:2px}
+.mkt{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px}
+.q{background:#0e1729;border:1px solid var(--line);border-radius:11px;padding:9px 10px}
+.q .n{font-size:11px;color:var(--muted)}.q .p{font-size:17px;font-weight:700}.q .c{font-size:12px;font-weight:650}
+.q svg{width:100%;height:20px;margin-top:3px;display:block}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:11px;color:var(--muted);text-align:left;font-weight:600;padding:5px 6px;border-bottom:1px solid var(--line)}
+td{padding:8px 6px;border-bottom:1px solid #1f2c47;vertical-align:middle}
+.bar{height:8px;background:#26334c;border-radius:10px;position:relative;min-width:60px}
+.bar b{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:#52668c}.bar i{position:absolute;top:0;bottom:0;border-radius:10px}
+details summary{cursor:pointer;list-style:none}details summary::-webkit-details-marker{display:none}
+.notes{font-size:12px;color:var(--muted);padding:6px 4px 2px 20px;line-height:1.55;margin:0}.notes li{margin:2px 0}
+.ev{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1f2c47;align-items:flex-start}
+.ev .when{min-width:96px;font-size:12px;color:var(--muted)}.ev .when b{display:block;color:var(--text);font-size:13px}
+.ev .t{flex:1;min-width:0;font-size:13px;line-height:1.4}.ev .m{font-size:11px;color:var(--muted);margin-top:2px}
+.tag{display:inline-block;border-radius:6px;padding:2px 7px;background:#263650;color:#cbd9f2;font-size:11px;margin:0 5px 3px 0}
+.tag.hot{background:#4a2a35;color:#ffc0ca}.tag.cur{background:#243a5e}.tag.warn{background:#4a3f22;color:#f4dd9b}
+.chips,.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.chip,.tab{border:1px solid #3a4d6d;background:#1b2740;color:var(--text);border-radius:20px;padding:5px 10px;font-size:12px;font-weight:500;cursor:pointer}
+.chip.on,.tab.on{background:var(--blue);color:#071225;border-color:var(--blue);font-weight:700}
+.news{padding:9px 0;border-bottom:1px solid #1f2c47}.news a{color:var(--text);text-decoration:none;font-size:13px;line-height:1.4}.news a:hover{text-decoration:underline}
+.day{font-size:11px;color:var(--blue);margin:12px 0 2px;text-transform:uppercase;letter-spacing:.05em}
+.foot{margin-top:14px;color:var(--muted);font-size:12px;line-height:1.6}
+.live .row{display:grid;grid-template-columns:70px minmax(0,1fr);gap:10px;padding:11px 10px;border-bottom:1px solid #1f2c47;border-left:3px solid transparent}
+.live .row.red{border-left-color:var(--red);background:rgba(255,102,122,.10)}
+.live .row.amber{border-left-color:var(--yellow)}
+.live .tm{font-size:12px;color:var(--muted)}.live .tm b{display:block;color:var(--text);font-size:13px}
+.live .body{min-width:0}.live .body a{color:var(--text);text-decoration:none;font-size:14px;line-height:1.4}.live .body a:hover{text-decoration:underline}
+.live .row.red .body a{font-weight:650}
+.rx{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+.rxc{border:1px solid var(--line);background:#0e1729;border-radius:8px;padding:3px 8px;font-size:12px;font-variant-numeric:tabular-nums}
+.rxc b{margin-right:4px}
+.rxv{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:#1b2740;margin-right:6px}
+.rxv.strong{background:#2c3a5c;font-weight:800}
+.rxv.red.strong{background:rgba(255,102,122,.22)}
+.lad .lv{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;padding:7px 8px;border-bottom:1px solid #1f2c47;font-size:13px;font-variant-numeric:tabular-nums;align-items:center}
+.lad .lv.now{background:#1b2740;border-radius:8px;font-weight:700;border-bottom:0;margin:2px 0}
+.lad .lvd{color:var(--muted);font-size:12px;text-align:right;min-width:104px}
+.mv{display:grid;grid-template-columns:50px 46px minmax(50px,1fr) 58px 64px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid #1f2c47;font-size:13px;font-variant-numeric:tabular-nums}
+.mv span:nth-child(4),.mv span:nth-child(5){text-align:right}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #1f2c47;font-size:13px;font-variant-numeric:tabular-nums;align-items:baseline}
+.kv .k{color:var(--muted);min-width:0}.kv .v{text-align:right}
+@media(max-width:860px){.hero,.cols,.cols.eq{grid-template-columns:1fr}.big{font-size:34px}}
+@media(max-width:520px){.live .row{grid-template-columns:54px minmax(0,1fr);gap:8px}.lad .lvd{min-width:0}}
+</style>
+</head>
+<body>
+<main>
+ <div class="top">
+  <div><h1>🧭 Nasdaq Macro Compass</h1>
+  <div class="sub">Contexto geral do dia e da semana para NQ / MNQ · automático · horário de Brasília</div></div>
+  <div class="right">
+   <button id="install" class="ghost" hidden>Instalar app</button>
+   <span class="pill"><span class="dot" id="dot"></span><span id="status">carregando…</span></span>
+  </div>
+ </div>
+ <div id="stale" class="stale" hidden></div>
+ <div id="redbar"></div>
+
+ <div class="hero" id="hero"></div>
+ <section class="card thesis" style="margin-bottom:12px"><h2>Tese automática</h2><div id="thesis" class="small">Buscando cotações, calendário e notícias…</div><div id="flags"></div></section>
+
+ <section class="card live" style="margin-bottom:12px"><h2>Ao vivo: manchetes e reação do mercado</h2>
+  <p class="desc">Vermelho = manchete relevante e inesperada, ou que foi seguida de reação forte no Nasdaq (NQ) e no S&amp;P (ES) ao mesmo tempo. Os números mostram a variação dos futuros 5, 15 e 60 minutos depois da manchete. "Forte" e "moderada" medem o tamanho do movimento contra a volatilidade das 2 horas anteriores à manchete, e não provam que a notícia foi a causa.</p>
+  <div id="live"><div class="small">Buscando manchetes…</div></div>
+  <p class="small" style="margin-top:10px">O horário é o do Google News e pode atrasar em relação à fonte original; por isso o painel avisa quando o mercado já se movia nos 15 minutos antes. Se há um red folder no mesmo minuto, a linha avisa que a reação pode ser do dado e não da manchete.</p>
+ </section>
+
+ <div class="cols">
+  <section class="card"><h2>Alertas que podem mudar a trajetória</h2><p class="desc">Red folders dos próximos dias e manchetes globais classificadas por relevância (Fed, dados, tarifas, geopolítica, energia, big tech, política). A classificação mede relevância, não direção.</p><div id="alerts"></div></section>
+  <section class="card"><h2>Agenda de red folders (BRT)</h2><p class="desc">Alto impacto de EUA, zona do euro, Reino Unido, Japão e China. Feriados dos EUA também aparecem.</p><div id="cal"></div></section>
+ </div>
+
+ <section class="card" style="margin-bottom:12px"><h2>Mercado agora</h2><p class="desc">Variação do dia = sessão completa (inclui Ásia e Europa nos futuros), não só a abertura de Nova York.</p><div class="mkt" id="mkt"></div></section>
+
+ <div class="cols eq">
+  <section class="card"><h2>Níveis do dia</h2><p class="desc">Referências do dia de negociação dos futuros (começa 18:00 ET): máxima e mínima de ontem, abertura de 00:00 ET, faixas asiática (20:00 a 00:00 ET) e de Londres (02:00 a 05:00 ET), e a semana. "Varreu" = passou do nível e voltou para dentro.</p><div id="levels"></div></section>
+  <section class="card"><h2>Quem puxa o Nasdaq</h2><p class="desc">As 10 maiores ações, ordenadas pelo peso na variação do índice hoje. Os pesos são aproximados e podem estar defasados.</p><div id="movers"></div></section>
+ </div>
+
+ <div class="cols eq">
+  <section class="card"><h2>Juros e estresse</h2><p class="desc">Rendimentos dos Treasuries, inclinação da curva, volatilidade dos títulos (MOVE) e crédito. Os limiares de estado (calmo, atenção, estresse) são aproximados.</p><div id="rates"></div></section>
+  <section class="card"><h2>Calendário estrutural (60 dias)</h2><p class="desc">Eventos calculados por regra de data: vencimentos, rolagem de contratos, fim de mês e trimestre, FOMC e feriados dos EUA. Não inclui leilões do Tesouro. Confirme na fonte oficial.</p><div id="struct"></div></section>
+ </div>
+
+ <section class="card" style="margin-bottom:12px"><h2>Blocos do score</h2><p class="desc">Cada bloco vai de -100 a +100. Clique na linha para ver os números usados.</p><div id="blocks"></div></section>
+
+ <section class="card" style="margin-bottom:12px"><h2>Painel de acerto</h2><p class="desc">O painel guarda neste aparelho o score do dia e o preço do NQ a cada abertura (no máximo uma leitura a cada 30 minutos). Depois de 4 a 30 horas, compara o viés com o que o NQ fez. Os dados ficam só neste navegador.</p><div id="acerto"></div></section>
+
+ <section class="card"><h2>Notícias globais</h2><div class="chips" id="chips"></div><div id="news"></div></section>
+
+ <p class="foot">Ferramenta educacional de apoio ao contexto, não recomendação financeira nem gatilho de entrada. O score é uma heurística transparente, não um modelo estatístico validado. Cotações vêm do Yahoo Finance (endpoint não oficial, pode atrasar ou falhar), o calendário de um feed público de terceiros e as notícias do Google News, classificadas por palavras-chave que não entendem contexto. Confirme eventos e horários na fonte oficial (BLS, Fed, NYSE) antes de operar e use sempre seu limite de risco e seu gatilho de preço.</p>
+ <p class="foot">Instalar como app: no Android (Chrome), use o botão "Instalar app" no topo ou o menu ⋮ e "Instalar app". No iPhone (Safari), toque em Compartilhar e "Adicionar à Tela de Início". No plano grátis o servidor dorme sem uso e a primeira abertura pode levar cerca de 1 minuto; o app mostra os últimos dados salvos enquanto isso.</p>
+</main>
+<script>
+const TZ='America/Sao_Paulo';
+const LAST_KEY='compass:last',H_KEY='compass:hist';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LS={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(_){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}}};
+let D=null,catFilter='todas',lvSym='NQ',lastOk=0,timer=null,loading=false,deferredInstall=null,confirmClear=false;
+
+const fmtDay=t=>new Intl.DateTimeFormat('pt-BR',{timeZone:TZ,weekday:'long',day:'2-digit',month:'2-digit'}).format(t);
+const fmtHour=t=>new Intl.DateTimeFormat('pt-BR',{timeZone:TZ,hour:'2-digit',minute:'2-digit',hour12:false}).format(t);
+const dayKey=t=>new Intl.DateTimeFormat('en-CA',{timeZone:TZ}).format(t);
+const fmtDate=ds=>new Intl.DateTimeFormat('pt-BR',{timeZone:'UTC',weekday:'short',day:'2-digit',month:'2-digit'}).format(Date.parse(ds+'T12:00:00Z'));
+function rel(ms){const m=Math.round(Math.abs(ms)/60000);const t=m>=1440?Math.floor(m/1440)+'d '+Math.floor((m%1440)/60)+'h':m>=60?Math.floor(m/60)+'h'+(m%60?' '+(m%60)+'min':''):m+'min';return ms>=0?'em '+t:'há '+t}
+const col=s=>s>=25?'green':s<=-25?'red':'yellow';
+const hex=s=>s>=25?'#35d39a':s<=-25?'#ff667a':'#f4c96b';
+const cls=x=>x>0?'green':x<0?'red':'';
+const sgn=n=>(n>0?'+':'')+n;
+const pct=x=>x==null?'n/d':(x>0?'+':'')+x.toFixed(2)+'%';
+const px=x=>x==null?'n/d':Number(x).toLocaleString('en-US',{maximumFractionDigits:2});
+
+function bar(v){ // v em -1..1
+  if(v==null)return '<div class="bar"></div>';
+  v=Math.max(-1,Math.min(1,v));
+  const w=Math.abs(v)*50;const c=v>=0.25?'#35d39a':v<=-0.25?'#ff667a':'#f4c96b';
+  return `<div class="bar"><b></b><i style="background:${c};${v>=0?'left:50%':'right:50%'};width:${w}%"></i></div>`;
+}
+function scoreBox(title,o){
+  const w=o.insufficient?0:Math.abs(o.score)/2;
+  const c=o.insufficient?'yellow':col(o.score);
+  return `<section class="score"><div class="kicker">${title}</div>
+   <div class="big ${c}">${o.insufficient?'—':sgn(o.score)}</div><div class="bias ${c}">${o.label}</div>
+   <div class="meter"><b></b><i style="background:${o.insufficient?'#f4c96b':hex(o.score)};${o.score>=0?'left:50%':'right:50%'};width:${w}%"></i></div>
+   <div class="small">Confiança <b>${o.confLabel}</b> (${o.confidence}%) · alinhamento dos blocos ${o.alignment}% · cobertura de dados ${o.coverage}%</div></section>`;
+}
+function riskBox(r,regime){
+  const c={baixo:'green',moderado:'yellow',alto:'red',extremo:'red'}[r.level];
+  const nx=r.next?`<div class="small" style="margin-top:6px"><b>${esc(r.next.title)}</b> (${r.next.currency})<br>${fmtDay(r.next.time)} às ${fmtHour(r.next.time)} · ${rel(r.next.time-Date.now())}</div>`:'<div class="small" style="margin-top:6px">Sem red folder dos EUA nos próximos dias.</div>';
+  return `<section class="score"><div class="kicker">Risco de evento</div><div class="big ${c}" style="font-size:32px;text-transform:uppercase">${r.level}</div>
+   <div class="bias" style="color:var(--text)">Regime: ${regime}</div>${nx}</section>`;
+}
+
+// Recalcula a idade das manchetes a partir do horário (serve também para dados salvos)
+function norm(){const now=Date.now();for(const k of ['news','live'])(D[k]||[]).forEach(n=>{n.ageH=(now-n.time)/3600e3})}
+
+function render(){
+  if(!D)return;
+  norm();
+  $('hero').innerHTML=scoreBox('Contexto do dia',D.day)+scoreBox('Contexto da semana',D.week)+riskBox(D.risk,D.regime);
+  $('thesis').innerHTML='<div class="thesis">'+D.narrative.map(t=>`<p>${esc(t)}</p>`).join('')+'</div><p class="small">Viés macro é contexto, não gatilho. Divergência forte entre dia e semana, ou evento próximo, pedem menos convicção e confirmação no seu preço e fluxo.</p>';
+  $('flags').innerHTML=D.flags.length?'<div class="kicker" style="margin-top:10px">Divergências e alertas de mercado</div>'+D.flags.map(f=>`<div class="flag">${esc(f)}</div>`).join(''):'';
+  renderAlerts();renderCal();renderMkt();renderBlocks();renderNews();renderLive();renderRedBar();
+  renderLevels();renderMovers();renderRates();renderStruct();renderAcerto();
+  const h=D.health,bad=h.symbolsOk<h.symbolsTotal*0.6;
+  $('dot').className='dot '+(bad?'bad':h.symbolsOk===h.symbolsTotal&&h.calendarOk?'ok':'');
+  $('status').textContent=`${h.symbolsOk}/${h.symbolsTotal} cotações · calendário: ${h.calendarSource}${h.calendarOk?'':' (atenção)'} · notícias ${h.newsOk}/${h.newsTotal} · reação: ${h.intraday?h.intraday+' (última barra há '+h.intradayAgeMin+' min)':'sem barras intraday'} · atualizado ${fmtHour(D.generatedAt)}`;
+}
+
+function renderAlerts(){
+  const now=Date.now();
+  const ev=D.calendar.filter(e=>e.impact==='High'&&e.time>=now-3600e3&&e.time<=now+72*3600e3).slice(0,5).map(e=>`<div class="ev"><div class="when"><b>${fmtHour(e.time)}</b>${rel(e.time-now)}</div><div class="t"><span class="tag hot">RED FOLDER</span><span class="tag cur">${e.currency}</span>${esc(e.title)}<div class="m">${e.forecast?'Previsão '+esc(e.forecast)+' · ':''}${e.previous?'Anterior '+esc(e.previous):''}</div></div></div>`);
+  const nw=D.news.filter(n=>n.flagged).slice(0,6).map(n=>`<div class="ev"><div class="when"><b>${n.horizon==='semana'?'Semana':'Dia'}</b>${rel(-n.ageH*3600e3)}</div><div class="t"><a href="${esc(n.link)}" target="_blank" rel="noopener noreferrer" style="color:var(--text);text-decoration:none">${esc(n.title)}</a><div class="m">${n.cats.map(c=>`<span class="tag">${c.label}</span>`).join('')}${esc(n.source||'')}</div></div></div>`);
+  $('alerts').innerHTML=(ev.join('')+nw.join(''))||'<div class="small">Nada relevante sinalizado agora.</div>';
+}
+function renderCal(){
+  const now=Date.now();let html='',last='';
+  for(const e of D.calendar){
+    const k=dayKey(e.time);
+    if(k!==last){html+=`<div class="day">${fmtDay(e.time)}</div>`;last=k}
+    const hol=e.impact==='Holiday';
+    html+=`<div class="ev"><div class="when"><b>${hol?'dia todo':fmtHour(e.time)}</b>${hol?'':rel(e.time-now)}</div><div class="t"><span class="tag ${hol?'':'hot'}">${hol?'FERIADO':'RED'}</span><span class="tag cur">${e.currency}</span>${esc(e.title)}<div class="m">${e.forecast?'Previsão '+esc(e.forecast)+' · ':''}${e.previous?'Anterior '+esc(e.previous):''}</div></div></div>`;
+  }
+  $('cal').innerHTML=html||'<div class="small">Nenhum evento encontrado.</div>'+(D.health.calendarOk?'':'<div class="small">Fonte do calendário indisponível. Confira em um calendário oficial.</div>');
+}
+const LAB={'NQ=F':'Nasdaq 100 (NQ)','ES=F':'S&P 500 (ES)','YM=F':'Dow (YM)','RTY=F':'Russell (RTY)','^VIX':'VIX','DX-Y.NYB':'Dólar (DXY)','^TNX':'Treasury 10Y','USDJPY=X':'USD/JPY','GC=F':'Ouro','CL=F':'Petróleo WTI','HG=F':'Cobre','BTC-USD':'Bitcoin','^N225':'Nikkei','^GDAXI':'DAX','^HSI':'Hang Seng','HYG':'High yield (HYG)'};
+function spark(a,up){if(!a||a.length<3)return '';const mn=Math.min(...a),mx=Math.max(...a),r=(mx-mn)||1;const p=a.map((v,i)=>`${(i/(a.length-1)*100).toFixed(1)},${(18-(v-mn)/r*16).toFixed(1)}`).join(' ');return `<svg viewBox="0 0 100 20" preserveAspectRatio="none"><polyline fill="none" stroke="${up?'#35d39a':'#ff667a'}" stroke-width="1.5" points="${p}"/></svg>`}
+function renderMkt(){
+  $('mkt').innerHTML=Object.keys(LAB).map(s=>{
+    const q=D.quotes[s];if(!q||!q.ok)return `<div class="q"><div class="n">${LAB[s]}</div><div class="p small">sem dados</div></div>`;
+    let price,chg,up;
+    if(s==='^TNX'){const y=q.price>20?q.price/10:q.price;const b=q.abs1d==null?null:q.abs1d*(q.price>20?10:100);price=y.toFixed(2)+'%';chg=b==null?'n/d':(b>0?'+':'')+b.toFixed(1)+' bp';up=(b||0)>=0}
+    else{price=q.price>=1000?q.price.toLocaleString('en-US',{maximumFractionDigits:0}):q.price.toFixed(2);chg=pct(q.chg1d);up=(q.chg1d||0)>=0}
+    return `<div class="q"><div class="n">${LAB[s]}${q.stale?' · atrasado':''}</div><div class="p">${price}</div><div class="c ${up?'green':'red'}">${chg}</div>${spark(q.spark,up)}</div>`;
+  }).join('');
+}
+function renderBlocks(){
+  let html='<table><thead><tr><th>Bloco</th><th>Peso</th><th style="width:26%">Dia</th><th style="width:26%">Semana</th></tr></thead></table>';
+  html+=D.blocks.map(b=>`<details><summary><table><tr><td>${esc(b.name)}</td><td style="width:50px">${b.weight}%</td><td style="width:26%">${bar(b.day)}<span class="small">${b.day==null?'sem dados':sgn(Math.round(b.day*100))}</span></td><td style="width:26%">${bar(b.week)}<span class="small">${b.week==null?'sem dados':sgn(Math.round(b.week*100))}</span></td></tr></table></summary><ul class="notes">${b.notes.length?b.notes.map(n=>`<li>${esc(n)}</li>`).join(''):'<li>Sem dados disponíveis para este bloco.</li>'}</ul></details>`).join('');
+  $('blocks').innerHTML=html;
+}
+function renderNews(){
+  const cats=['todas','relevantes'];D.news.forEach(n=>n.cats.forEach(c=>{if(!cats.includes(c.label))cats.push(c.label)}));
+  $('chips').innerHTML=cats.map(c=>`<button class="chip ${c===catFilter?'on':''}" data-c="${esc(c)}">${esc(c)}</button>`).join('');
+  document.querySelectorAll('#chips .chip').forEach(b=>b.onclick=()=>{catFilter=b.dataset.c;renderNews()});
+  const list=D.news.filter(n=>catFilter==='todas'||(catFilter==='relevantes'?n.flagged:n.cats.some(c=>c.label===catFilter)));
+  $('news').innerHTML=list.map(n=>`<div class="news"><a href="${esc(n.link)}" target="_blank" rel="noopener noreferrer">${esc(n.title)}</a><div class="small">${n.flagged?'<span class="tag hot">relevante</span>':''}${n.cats.map(c=>`<span class="tag">${c.label}</span>`).join('')}${esc(n.source||'')} · ${rel(-n.ageH*3600e3)}</div></div>`).join('')||'<div class="small">Nenhuma manchete nesta categoria (ou as consultas de notícias falharam).</div>';
+}
+
+// ---- Ao vivo: manchetes e reação ----
+const WLAB={5:'5m',15:'15m',60:'60m'};
+function chip(name,r){
+  if(!r||r.status!=='ok')return `<span class="rxc"><b>${name}</b><span class="mut">${r&&r.status==='fechado'?'mercado fechado':'sem dados'}</span></span>`;
+  const ws=r.windows.map(w=>w.done?`<span class="${cls(w.chg)}">${WLAB[w.min]} ${pct(w.chg)}</span>`:`<span class="mut">${WLAB[w.min]} …</span>`).join(' · ');
+  const part=r.windows.every(w=>!w.done)&&r.now?` <span class="mut">(${r.now.min}m: ${pct(r.now.chg)})</span>`:'';
+  return `<span class="rxc"><b>${name}</b>${ws}${part}</span>`;
+}
+function verdict(s){
+  const ar=s.dir>0?'↑':s.dir<0?'↓':'',c=s.dir>0?'green':s.dir<0?'red':'';
+  const M={forte:['reagiu forte '+ar,c,1],moderada:['reação moderada '+ar,c,0],nenhuma:['sem reação relevante','mut',0],divergente:['NQ e ES divergiram','yellow',0],pendente:['aguardando 5 min','mut',0],fechado:['mercado fechado na hora','mut',0],'sem-dados':['sem dados intraday','mut',0]};
+  const m=M[s.level]||M['sem-dados'];
+  let h=`<span class="rxv ${m[1]}${m[2]?' strong':''}">${m[0]}</span>`;
+  if(s.late)h+='<span class="rxv yellow">já se movia antes: a fonte pode ter atrasado</span>';
+  return h;
+}
+function renderLive(){
+  const L=D.live||[];
+  $('live').innerHTML=L.map(n=>{
+    const lab=n.alert==='red'?`<span class="rxv red strong">${n.surprise&&n.flagged?'importante · inesperada':'moveu o mercado'}</span>`:'';
+    const tags=n.cats.map(c=>`<span class="tag">${c.label}</span>`).join('');
+    const near=n.eventNear?`<span class="rxv yellow">coincide com ${esc(n.eventNear)}</span>`:'';
+    return `<div class="row ${n.alert||''}"><div class="tm"><b>${fmtHour(n.time)}</b>${rel(-n.ageH*3600e3)}</div><div class="body">${lab}<a href="${esc(n.link)}" target="_blank" rel="noopener noreferrer">${esc(n.title)}</a><div class="small">${tags}${esc(n.source||'')}</div><div class="rx">${chip('NQ',n.react.nq)}${chip('ES',n.react.es)}${verdict(n.react.sum)}${near}</div></div></div>`;
+  }).join('')||'<div class="small">Nenhuma manchete relevante nas últimas 24h (ou as consultas de notícias falharam).</div>';
+}
+function renderRedBar(){
+  const r=(D.live||[]).filter(n=>n.alert==='red'&&n.ageH<=3);
+  $('redbar').innerHTML=r.length?`<div class="redbar"><b>${r.length} alerta${r.length>1?'s':''} vermelho${r.length>1?'s':''} nas últimas 3 horas</b>${esc(r[0].title)} <span class="mut">· ${fmtHour(r[0].time)} · ${esc(r[0].source||'')}</span></div>`:'';
+}
+
+// ---- Níveis do dia ----
+function renderLevels(){
+  const tabs=['NQ','ES'].map(s=>`<button class="tab ${s===lvSym?'on':''}" data-s="${s}">${s}</button>`).join('');
+  const L=D.levels&&D.levels[lvSym];
+  let body;
+  if(!L){body='<div class="small">Sem barras intraday suficientes para calcular os níveis (o Yahoo não entregou, ou o mercado acabou de abrir).</div>'}
+  else{
+    const rows=L.levels.map(l=>({label:l.label,price:l.price,pts:l.pts,dp:l.distPct,now:false}));
+    rows.push({label:'Preço agora',price:L.last,now:true});
+    rows.sort((a,b)=>b.price-a.price);
+    body='<div class="lad">'+rows.map(r=>r.now?`<div class="lv now"><span>${r.label}</span><span>${px(r.price)}</span><span class="lvd"></span></div>`:`<div class="lv"><span>${esc(r.label)}</span><span>${px(r.price)}</span><span class="lvd">${r.pts>0?'+':''}${px(r.pts)} pts · ${pct(r.dp)}</span></div>`).join('')+'</div>';
+    if(L.sweeps.length)body+='<div class="kicker" style="margin-top:12px">Varreduras</div>'+L.sweeps.map(t=>`<div class="flag">${esc(t)}</div>`).join('');
+    body+='<div class="kicker" style="margin-top:12px">Posição do preço</div><ul class="notes">'+L.position.map(t=>`<li>${esc(t)}</li>`).join('')+'</ul>';
+    body+=`<div class="small" style="margin-top:8px">Dia de negociação ${esc(L.td)} · última barra ${fmtHour(L.asOf)}</div>`;
+  }
+  $('levels').innerHTML=`<div class="tabs">${tabs}</div>${body}`;
+  document.querySelectorAll('#levels .tab').forEach(b=>b.onclick=()=>{lvSym=b.dataset.s;renderLevels()});
+}
+
+// ---- Quem puxa o Nasdaq ----
+function renderMovers(){
+  const M=D.movers;
+  if(!M){$('movers').innerHTML='<div class="small">Sem cotações suficientes das maiores ações.</div>';return}
+  const mx=Math.max(0.05,...M.rows.map(r=>Math.abs(r.contrib)));
+  let sum=`Das ${M.total} maiores, ${M.up} sobem. Juntas somam <b class="${cls(M.sum)}">${M.sum>0?'+':''}${M.sum.toFixed(2)} pp</b> na variação do índice (pesos somam ~${M.wsum}%).`;
+  if(M.share!=null)sum+=M.share>=0?` Isso é cerca de ${Math.round(M.share*100)}% do movimento do NQ (${pct(M.nq)}).`:` Elas andaram contra o movimento do NQ (${pct(M.nq)}): o índice está sendo movido por outras ações.`;
+  $('movers').innerHTML=`<div class="small" style="margin-bottom:8px">${sum}</div>`+M.rows.map(r=>`<div class="mv"><b>${r.sym}</b><span class="mut">~${r.w}%</span>${bar(r.contrib/mx)}<span class="${cls(r.chg)}">${pct(r.chg)}</span><span class="${cls(r.contrib)}">${r.contrib>0?'+':''}${r.contrib.toFixed(2)} pp</span></div>`).join('');
+}
+
+// ---- Juros e estresse ----
+function renderRates(){
+  const R=D.rates;
+  if(!R){$('rates').innerHTML='<div class="small">Sem dados de juros no momento.</div>';return}
+  const kv=(k,v,note)=>`<div class="kv"><span class="k">${k}${note?`<br><span class="small">${note}</span>`:''}</span><span class="v">${v}</span></div>`;
+  const yl=(n,y)=>y?kv(n,`${y.y.toFixed(2)}% <span class="${y.d1==null?'mut':y.d1>0?'red':'green'}">${y.d1==null?'':(y.d1>0?'+':'')+y.d1.toFixed(1)+' bp'}</span>`):'';
+  const cv=(n,c)=>c?kv(n,`${c.pp>0?'+':''}${c.pp.toFixed(2)} pp · ${c.label}${c.d1==null?'':` <span class="mut">(${c.d1>0?'+':''}${c.d1.toFixed(1)} bp no dia)</span>`}`):'';
+  let h='';
+  if(R.move)h+=kv('MOVE (volatilidade dos títulos)',`${R.move.price.toFixed(0)} <span class="${R.move.state==='estresse'?'red':R.move.state==='atenção'?'yellow':'green'}">${R.move.state}</span>`,'abaixo de ~90 costuma ser calmo; acima de ~120, estresse');
+  h+=yl('Treasury 3 meses',R.y3m)+yl('Treasury 5 anos',R.y5)+yl('Treasury 10 anos',R.y10)+yl('Treasury 30 anos',R.y30)+cv('Curva 10 anos − 3 meses',R.c10_3m)+cv('Curva 10 anos − 5 anos',R.c10_5);
+  if(R.credit)h+=kv('Crédito no dia',`HYG <span class="${cls(R.credit.hyg)}">${pct(R.credit.hyg)}</span>${R.credit.lqd==null?'':` · LQD <span class="${cls(R.credit.lqd)}">${pct(R.credit.lqd)}</span>`}`,'high yield caindo mais que grau de investimento sugere aversão a risco');
+  $('rates').innerHTML=h||'<div class="small">Sem dados de juros no momento.</div>';
+}
+
+// ---- Calendário estrutural ----
+const KIND={opex:['OPÇÕES','hot'],roll:['ROLAGEM','warn'],vix:['VIX','warn'],monthend:['FIM DE MÊS','cur'],fomc:['FOMC','hot'],holiday:['FERIADO','warn'],early:['MEIO PERÍODO','warn']};
+function renderStruct(){
+  const today=dayKey(Date.now());
+  const S=(D.structural||[]).map(e=>({...e,inDays:Math.round((Date.parse(e.date+'T00:00:00Z')-Date.parse(today+'T00:00:00Z'))/86400e3)})).filter(e=>e.inDays>=0);
+  $('struct').innerHTML=S.length?S.map(e=>{const k=KIND[e.kind]||['EVENTO','cur'];return `<div class="ev"><div class="when"><b>${fmtDate(e.date)}</b>${e.inDays===0?'hoje':e.inDays===1?'amanhã':'em '+e.inDays+' dias'}</div><div class="t"><span class="tag ${k[1]}">${k[0]}</span>${esc(e.label)}<div class="m">${esc(e.note)}</div></div></div>`}).join(''):'<div class="small">Nenhum evento estrutural nos próximos 60 dias.</div>';
+}
+
+// ---- Painel de acerto (fica só neste aparelho) ----
+function recordHist(){
+  if(!D||D.day.insufficient)return;
+  const q=D.quotes['NQ=F'];if(!q||!q.ok)return;
+  const h=LS.get(H_KEY)||[];const now=Date.now();
+  if(h.length&&now-h[h.length-1].t<30*60e3)return;
+  h.push({t:now,d:D.day.score,w:D.week.score,p:q.price});
+  LS.set(H_KEY,h.slice(-600));
+}
+function evalHits(h,now=Date.now()){
+  const H4=4*3600e3,H30=30*3600e3;
+  const r={buy:{n:0,ok:0},sell:{n:0,ok:0},open:0,neutral:0};
+  for(let i=0;i<h.length;i++){
+    const a=h[i];
+    if(Math.abs(a.d)<25){r.neutral++;continue}
+    const b=h.slice(i+1).find(x=>x.t>=a.t+H4&&x.t<=a.t+H30);
+    if(!b){if(now-a.t<H4)r.open++;continue}
+    const mv=(b.p/a.p-1)*100,side=a.d>0?'buy':'sell';
+    r[side].n++;if(Math.sign(mv)===Math.sign(a.d))r[side].ok++;
+  }
+  return r;
+}
+function renderAcerto(){
+  const h=LS.get(H_KEY)||[];const r=evalHits(h);
+  const tot=r.buy.n+r.sell.n,ok=r.buy.ok+r.sell.ok;
+  const row=(n,x)=>`<tr><td>${n}</td><td>${x.n}</td><td>${x.ok}</td><td>${x.n?Math.round(x.ok/x.n*100)+'%':'—'}</td></tr>`;
+  const note=tot<20?'Amostra pequena demais para concluir qualquer coisa: abra o painel em vários horários e dias para acumular leituras.':'Mesmo com amostra maior, isso mede acerto de direção, não lucro, e as leituras refletem os horários em que você abriu o painel.';
+  $('acerto').innerHTML=`<table><thead><tr><th>Viés do dia (|score| ≥ 25)</th><th>Leituras</th><th>Acertos</th><th>Taxa</th></tr></thead>${row('Comprador',r.buy)}${row('Vendedor',r.sell)}${row('<b>Total</b>',{n:tot,ok:ok})}</table>
+  <p class="small" style="margin-top:8px">${h.length} leituras guardadas neste aparelho · ${r.neutral} neutras (fora da conta) · ${r.open} aguardando as 4 horas mínimas. Acerto = o NQ andou na direção do viés entre 4 e 30 horas depois. Contratos futuros rolam a cada trimestre, o que pode distorcer uma leitura. ${note}</p>
+  <button id="clearHist" class="ghost" ${h.length?'':'hidden'}>${confirmClear?'Confirmar: apagar histórico':'Apagar histórico'}</button>`;
+  const b=$('clearHist');if(b)b.onclick=()=>{if(!confirmClear){confirmClear=true;renderAcerto();return}confirmClear=false;LS.set(H_KEY,[]);renderAcerto()};
+}
+
+// ---- Carregamento, dados salvos e economia de servidor ----
+function setStale(t){const e=$('stale');e.textContent=t;e.hidden=false}
+function hideStale(){$('stale').hidden=true}
+async function load(){
+  if(loading)return;loading=true;
+  const slow=setTimeout(()=>{if(loading)setStale('Acordando o servidor (no plano grátis ele pode levar cerca de 1 minuto)…'+(D?' Enquanto isso, mostrando os dados salvos às '+fmtHour(D.generatedAt)+'.':''))},5000);
+  try{
+    const r=await fetch('/api/dashboard',{cache:'no-store'});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    D=await r.json();lastOk=Date.now();
+    LS.set(LAST_KEY,D);hideStale();render();recordHist();renderAcerto();
+  }catch(e){
+    if(D)setStale('Sem conexão com o servidor. Mostrando os dados salvos às '+fmtHour(D.generatedAt)+'.');
+    else{$('dot').className='dot bad';$('status').textContent='sem conexão com o servidor'}
+  }finally{clearTimeout(slow);loading=false}
+}
+// Só atualiza com a tela aberta: aba oculta ou app em segundo plano não consome o servidor.
+function schedule(){clearTimeout(timer);if(document.hidden)return;timer=setTimeout(async()=>{await load();schedule()},90000)}
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){clearTimeout(timer);return}
+  if(Date.now()-lastOk>60000)load().then(schedule);
+  else{if(D){render()}schedule()}
+});
+setInterval(()=>{if(D&&!document.hidden){norm();renderAlerts();renderCal();renderLive();renderRedBar();renderStruct()}},30000);
+
+// ---- Instalar como app ----
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('install').hidden=false});
+window.addEventListener('appinstalled',()=>{$('install').hidden=true;deferredInstall=null});
+$('install').onclick=async()=>{if(!deferredInstall)return;deferredInstall.prompt();try{await deferredInstall.userChoice}catch(_){}deferredInstall=null;$('install').hidden=true};
+if('serviceWorker' in navigator)window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{})});
+
+// ---- Início: mostra o último resultado salvo na hora e atualiza em seguida ----
+const saved=LS.get(LAST_KEY);
+if(saved&&saved.generatedAt&&saved.day&&saved.week){D=saved;try{render()}catch(_){D=null}if(D)setStale('Mostrando os dados salvos às '+fmtHour(D.generatedAt)+'. Atualizando…')}
+load().then(schedule);
+</script>
+</body>
+</html>

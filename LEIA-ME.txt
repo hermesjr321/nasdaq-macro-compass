@@ -1,0 +1,64 @@
+NASDAQ MACRO COMPASS v2 - COLOCAR NA NUVEM (grátis, uma vez só)
+
+Resultado: um link fixo (algo como nasdaq-macro-compass.onrender.com) que você abre no celular ou no PC.
+O painel busca cotações, calendário e notícias sozinho. Nada fica instalado no seu computador.
+Os nomes dos botões nos sites podem variar um pouco; a ideia é a mesma.
+
+PASSO 1 - Extrair
+Extraia este zip em qualquer pasta.
+
+PASSO 2 - GitHub (guarda os arquivos)
+1. Entre em github.com (crie a conta grátis se não tiver).
+2. Clique em "+" no canto superior > "New repository".
+3. Nome: nasdaq-macro-compass. Marque "Public". Clique em "Create repository".
+4. Na página do repositório, clique em "uploading an existing file".
+5. Arraste TODOS os arquivos extraídos, incluindo a PASTA icons (server.js, score.js, news.js, reaction.js, levels.js, extras.js, structural.js, index.html, manifest.webmanifest, sw.js, package.json, render.yaml, test.js, test-modulos.js e icons/).
+   Dica: arraste a pasta icons inteira; ela precisa continuar sendo uma pasta no GitHub.
+6. Clique em "Commit changes".
+
+PASSO 3 - Render (coloca no ar)
+1. Entre em render.com com "Sign in with GitHub".
+2. Clique em "New +" > "Web Service" e escolha o repositório nasdaq-macro-compass.
+3. Em "Instance Type" escolha "Free". O resto já vem preenchido (build: npm install, start: npm start).
+4. Clique em "Create Web Service" e espere 2 a 3 minutos.
+5. O link aparece no topo da página. Abra e salve nos favoritos.
+
+O QUE ESPERAR
+- No plano grátis o Render "dorme" depois de uns 15 minutos sem acesso. O primeiro acesso depois disso pode levar cerca de 1 minuto para carregar.
+- A barra de status no topo do painel mostra quantas cotações chegaram (ex.: 38/38). Se mostrar 0, o Yahoo Finance bloqueou o servidor da nuvem. Nesse caso me avise.
+- Confirme datas e horários de eventos na fonte oficial antes de operar. O painel é apoio ao contexto, não gatilho de entrada.
+
+COMO ATUALIZAR DEPOIS (quando eu mandar uma versão nova)
+1. No GitHub, abra o repositório nasdaq-macro-compass.
+2. Clique em "Add file" > "Upload files" e arraste os arquivos novos por cima (mesmos nomes).
+3. Clique em "Commit changes". O Render detecta sozinho e publica em 2 a 3 minutos. O link continua o mesmo.
+
+ATUALIZAÇÃO "AO VIVO" (manchetes em vermelho + reação do Nasdaq e S&P)
+Arquivos que mudaram ou são novos: reaction.js (NOVO), server.js, news.js, index.html.
+Suba os quatro no GitHub. O reaction.js é obrigatório: sem ele o servidor não inicia.
+Depois do deploy, a barra de status no topo deve mostrar "reação: 1m (última barra há X min)".
+Se mostrar "sem barras intraday", o Yahoo não entregou os dados de 1 minuto para o servidor da nuvem; as manchetes continuam aparecendo, só sem os números de reação.
+
+
+VERSÃO COM APP NO CELULAR + NOVOS CARTÕES
+Arquivos novos: levels.js, extras.js, structural.js, manifest.webmanifest, sw.js, test-modulos.js e a pasta icons/ (4 imagens).
+Arquivos que mudaram: server.js, news.js, index.html, package.json.
+Suba todos no GitHub (Add file > Upload files), mantendo a pasta icons. levels.js, extras.js e structural.js são obrigatórios: sem eles o servidor não inicia.
+
+Novos cartões: Níveis do dia (máxima/mínima de ontem, Ásia, Londres, semana, varreduras), Quem puxa o Nasdaq, Juros e estresse (MOVE, curva, crédito), Calendário estrutural (60 dias) e Painel de acerto (fica só no aparelho onde você abre).
+
+INSTALAR COMO APP
+- Android (Chrome): abra o link, toque em "Instalar app" no topo da página (ou menu ⋮ > "Instalar app").
+- iPhone (Safari): toque em Compartilhar > "Adicionar à Tela de Início".
+- A versão nova do app aparece na segunda abertura depois de cada atualização.
+- O app mostra os últimos dados salvos na hora enquanto o Render acorda (cerca de 1 minuto no plano grátis).
+
+COMO O USO DO RENDER GRÁTIS FOI REDUZIDO
+- O servidor não faz nada sozinho: só busca dados quando alguém abre o painel.
+- Dados ficam em cache (cotações 90 s, intraday 2 min, notícias 5 min, calendário 20 min) e a resposta é compactada.
+- O painel só atualiza com a tela aberta, a cada 90 s; em segundo plano ele pausa.
+
+PONTOS A CONFERIR
+- Os pesos das 10 maiores ações são aproximados.
+- As listas de FOMC e feriados dos EUA valem até fev/2027; leilões do Tesouro não estão incluídos.
+- Barras de 1 minuto, MOVE (^MOVE) e juros (^IRX, ^FVX, ^TYX) dependem do Yahoo entregar ao servidor da nuvem; confira na barra de status.
