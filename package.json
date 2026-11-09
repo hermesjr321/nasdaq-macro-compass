@@ -1,9 +1,0 @@
-{
-  "name": "nasdaq-macro-compass",
-  "version": "2.0.0",
-  "description": "Painel automático de contexto macro para NQ/MNQ (dia e semana), com red folders e notícias globais",
-  "scripts": { "start": "node server.js", "test": "node test.js" },
-  "engines": { "node": ">=18" },
-  "license": "UNLICENSED",
-  "private": true
-}
